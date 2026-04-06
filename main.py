@@ -71,7 +71,7 @@ def cmd_auth():
         "doubao": "豆包 (Doubao)",
     }
 
-    existing_providers = set(providers)
+    existing_providers = set()
     missing_providers = [p for p in login_urls.keys() if p not in existing_providers]
 
     if existing_providers:
