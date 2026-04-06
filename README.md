@@ -42,10 +42,137 @@ python main.py auth
 3. 提示你在浏览器中登录各平台
 4. 按 Enter 键后自动捕获所有平台的凭证
 
+**实际运行示例：**
+
+```
+========================================
+  Zero Token API Server
+  Free LLM API via browser automation
+========================================
+
+Starting authentication...
+
+Checking Chrome status...
+✓ Chrome 已运行 (CDP: 9222)
+
+需要登录的平台:
+  - DeepSeek
+  - GLM (智谱)
+  - Kimi (月之暗面)
+  - 豆包 (Doubao)
+
+🚀 正在打开登录页面...
+请在浏览器中完成登录，然后按 Enter 键继续...
+
+  Opening DeepSeek: https://chat.deepseek.com
+  Opening GLM (智谱): https://chatglm.cn
+  Opening Kimi (月之暗面): https://www.kimi.com
+  Opening 豆包 (Doubao): https://www.doubao.com
+
+✓ 已打开 4 个登录页面
+
+==================================================
+请在浏览器中完成所有平台的登录
+登录完成后，按 Enter 键继续捕获凭证...
+==================================================
+```
+
+在浏览器中完成所有平台的登录后，按 Enter 键继续：
+
+```
+🔄 开始捕获凭证...
+
+正在捕获 DeepSeek 凭证...
+正在连接到 Chrome (CDP: 9222)...
+✓ 已连接到 Chrome
+正在检查 DeepSeek 登录状态...
+✓ 检测到已登录状态
+正在捕获凭证...
+正在触发 API 请求...
+✓ 捕获到 Bearer Token
+✓ 捕获到 Bearer Token
+✓ 从响应中捕获到 Token
+✓ 捕获到 Cookies (5 个)
+  ✅ 认证成功!
+     Cookie 长度: 317
+     Bearer: PHvTIz0vCe/Ta670qw4FFkb+xFF3dj...
+
+正在捕获 GLM (智谱) 凭证...
+正在连接到 Chrome (CDP: 9222)...
+✓ 已连接到 Chrome
+正在检查 GLM 登录状态...
+✓ 检测到已登录状态
+正在捕获凭证...
+✓ 捕获到 Cookies (8 个)
+✓ chatglm_refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...
+✓ chatglm_token: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...
+  ✅ 认证成功!
+     Cookie 长度: 1546
+     Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...
+
+正在捕获 Kimi (月之暗面) 凭证...
+连接到 Chrome (CDP: 9222)...
+✓ 已连接到 Chrome
+正在检查 Kimi 登录状态...
+✓ 检测到已登录状态
+正在捕获凭证...
+总共捕获 57 个 cookies
+  ✓ 找到 kimi-auth cookie
+✓ Cookie 长度：5796
+✓ Bearer token：eyJhbGciOiJIUzUxMiIsInR5cCI6Ik...
+  ✅ 认证成功!
+     Cookie 长度: 5796
+     Bearer: eyJhbGciOiJIUzUxMiIsInR5cCI6Ik...
+
+正在捕获 豆包 (Doubao) 凭证...
+连接到 Chrome (CDP: 9222)...
+✓ 已连接到 Chrome
+正在检查豆包登录状态...
+✓ 检测到已登录状态
+正在捕获凭证...
+总共捕获 57 个 cookies
+  找到：hook_slardar_session_id=20260406203032A64E7CA443A10501...
+  找到：ds_session_id=7f685f9dea3a446989904b60d34d85...
+  找到：passport_auth_status=98a4d8f091bb32b04e03e1f4330241...
+✓ Cookie 长度：5796
+✓ Bearer: 98a4d8f091bb32b04e03e1f4330241...
+  ✅ 认证成功!
+     Cookie 长度: 5796
+     Bearer: 98a4d8f091bb32b04e03e1f4330241...
+
+==================================================
+凭证捕获完成!
+  ✅ 成功: 4 个平台
+  ❌ 失败: 0 个平台
+  凭证文件: .auth.json
+==================================================
+
+现在可以运行 'python main.py serve' 启动服务
+```
+
 ### 3. 启动 API 服务
 
 ```bash
 python main.py serve
+```
+
+**实际运行示例：**
+
+```
+========================================
+  Zero Token API Server
+  Free LLM API via browser automation
+========================================
+
+Server running on http://0.0.0.0:8000
+Docs: http://0.0.0.0:8000/docs
+
+Run 'python main.py auth' first if no credentials
+
+INFO:     Started server process [111504]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
 
 服务将运行在 `http://localhost:8000`，API 文档可访问 `http://localhost:8000/docs`
