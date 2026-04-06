@@ -62,7 +62,13 @@ class GlmAuth:
                     return None
 
             print("正在检查 GLM 登录状态...")
-            await self.page.goto("https://chatglm.cn")
+
+            target_url = "https://chatglm.cn"
+
+            try:
+                await self.page.goto(target_url)
+            except Exception:
+                pass
 
             await asyncio.sleep(2)
 
@@ -73,7 +79,7 @@ class GlmAuth:
                 print("正在捕获凭证...")
             else:
                 print("\n❌ 未检测到登录状态")
-                print("请先在浏览器中登录 GLM (https://chatglm.cn)，然后重新运行此命令")
+                print("请在浏览器中登录 GLM (https://chatglm.cn)，然后重新运行此命令")
                 return None
 
             self.credentials = await self._capture_credentials()
@@ -110,7 +116,9 @@ class GlmAuth:
         if chatglm_token:
             print(f"✓ chatglm_token: {chatglm_token[:30]}...")
 
-        return AuthCredentials(cookie=cookie_str, bearer=chatglm_token, user_agent=user_agent)
+        return AuthCredentials(
+            cookie=cookie_str, bearer=chatglm_token, user_agent=user_agent
+        )
 
 
 async def main():

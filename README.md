@@ -9,6 +9,8 @@
 - 📡 **流式传输**：支持 SSE（Server-Sent Events）流式响应
 - 🔐 **自动凭证管理**：自动捕获并存储登录 Cookie 和 Token
 - 🌐 **多平台支持**：DeepSeek、智谱 GLM、Kimi（月之暗面）、豆包
+- 🚀 **一键认证**：自动打开所有平台登录页面，批量捕获凭证
+- 💾 **持久化登录**：浏览器数据持久化，无需重复登录
 
 ## 🤖 支持的模型
 
@@ -28,28 +30,19 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-### 2. 启动 Chrome 浏览器（远程调试模式）
-
-```bash
-# Windows
-chrome.exe --remote-debugging-port=9222 --user-data-dir=chrome-debug-profile
-
-# macOS
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=chrome-debug-profile
-
-# Linux
-google-chrome --remote-debugging-port=9222 --user-data-dir=chrome-debug-profile
-```
-
-### 3. 登录认证
+### 2. 一键认证
 
 ```bash
 python main.py auth
 ```
 
-选择要认证的平台，在打开的浏览器中完成登录即可。
+程序会自动：
+1. 启动 Chrome（如果未运行）
+2. 打开所有 4 个平台的登录页面
+3. 提示你在浏览器中登录各平台
+4. 按 Enter 键后自动捕获所有平台的凭证
 
-### 4. 启动 API 服务
+### 3. 启动 API 服务
 
 ```bash
 python main.py serve
@@ -161,7 +154,8 @@ python-zero-token/
 │   ├── models.py       # 数据模型
 │   └── server.py       # FastAPI 服务器
 ├── utils/
-│   └── storage.py      # 凭证存储
+│   ├── storage.py      # 凭证存储
+│   └── browser_launcher.py  # 浏览器启动工具
 ├── main.py             # 主入口
 ├── requirements.txt    # 依赖列表
 └── README.md          # 本文件
@@ -180,7 +174,7 @@ python-zero-token/
 # 启动 API 服务器
 python main.py serve
 
-# 登录认证
+# 登录认证（自动打开所有平台，批量捕获凭证）
 python main.py auth
 
 # 查看已认证的平台列表
@@ -190,10 +184,28 @@ python main.py list
 python main.py help
 ```
 
+## ⚙️ 配置选项
+
+可以通过环境变量或 `.env` 文件配置：
+
+```env
+# Chrome 配置
+CHROME_USER_DATA_DIR=C:\tmp\chrome-debug    # 浏览器数据目录（持久化登录）
+CHROME_CDP_PORT=9222                         # Chrome 调试端口
+AUTO_START_CHROME=true                       # 自动启动 Chrome
+
+# 服务器配置
+HOST=0.0.0.0                                # 监听地址
+PORT=8000                                    # 监听端口
+
+# 凭证存储
+AUTH_FILE=.auth.json                         # 凭证文件路径
+```
+
 ## ⚠️ 注意事项
 
 1. **凭证有效期**：各平台的 Cookie 和 Token 可能会过期，需要定期重新认证
-2. **浏览器保持运行**：使用期间请保持 Chrome 浏览器运行状态
+2. **持久化登录**：登录状态保存在 `CHROME_USER_DATA_DIR` 目录中，首次认证后无需重复登录
 3. **速率限制**：Web 端接口可能有速率限制，请合理使用
 4. **仅供学习**：本项目仅供研究学习使用，请遵守各平台的服务条款
 

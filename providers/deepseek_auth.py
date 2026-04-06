@@ -66,7 +66,13 @@ class DeepSeekAuth:
                     return None
 
             print("正在检查 DeepSeek 登录状态...")
-            await self.page.goto("https://chat.deepseek.com")
+
+            target_url = "https://chat.deepseek.com"
+
+            try:
+                await self.page.goto(target_url)
+            except Exception:
+                pass
 
             await asyncio.sleep(2)
 
@@ -77,7 +83,7 @@ class DeepSeekAuth:
                 print("正在捕获凭证...")
             else:
                 print("\n❌ 未检测到登录状态")
-                print("请先在浏览器中登录 DeepSeek，然后重新运行此命令")
+                print("请在浏览器中登录 DeepSeek，然后重新运行此命令")
                 return None
 
             self.credentials = await self._capture_credentials()
@@ -149,9 +155,13 @@ class DeepSeekAuth:
         user_agent = await self.page.evaluate("() => navigator.userAgent")
 
         if not captured_bearer:
-            print("\n提示: 如果后续 API 调用失败，请尝试在浏览器中发起一次对话，然后重新运行此命令")
+            print(
+                "\n提示: 如果后续 API 调用失败，请尝试在浏览器中发起一次对话，然后重新运行此命令"
+            )
 
-        return AuthCredentials(cookie=cookie_str, bearer=captured_bearer, user_agent=user_agent)
+        return AuthCredentials(
+            cookie=cookie_str, bearer=captured_bearer, user_agent=user_agent
+        )
 
 
 async def main():

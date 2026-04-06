@@ -53,13 +53,19 @@ class KimiAuth:
 
             print("正在检查 Kimi 登录状态...")
 
-            await self.page.goto("https://www.kimi.com/", wait_until="domcontentloaded")
-            await asyncio.sleep(5)
+            target_url = "https://www.kimi.com/"
+
+            try:
+                await self.page.goto(target_url)
+            except Exception:
+                pass
+
+            await asyncio.sleep(3)
 
             current_url = self.page.url
             if "login" in current_url.lower():
                 print("\n❌ 未检测到登录状态")
-                print("请先在浏览器中登录 Kimi (https://www.kimi.com)")
+                print("请在浏览器中登录 Kimi (https://www.kimi.com)")
                 return None
 
             print("✓ 检测到已登录状态")
@@ -142,7 +148,9 @@ class KimiAuth:
             print("   请确保已登录 Kimi 并刷新页面")
             return None
 
-        credentials = AuthCredentials(cookie=cookie_str, bearer=bearer, user_agent=user_agent)
+        credentials = AuthCredentials(
+            cookie=cookie_str, bearer=bearer, user_agent=user_agent
+        )
 
         print(f"✓ Cookie 长度：{len(cookie_str)}")
         print(f"✓ Bearer token：{bearer[:30]}...")
