@@ -32,6 +32,8 @@ playwright install chromium
 
 ### 2. 一键认证
 
+#### 方式一：浏览器认证（推荐）
+
 ```bash
 python main.py auth
 ```
@@ -41,6 +43,33 @@ python main.py auth
 2. 打开所有 4 个平台的登录页面
 3. 提示你在浏览器中登录各平台
 4. 按 Enter 键后自动捕获所有平台的凭证
+
+#### 方式二：账号密码认证（Linux 服务器）
+
+```bash
+python main.py account
+```
+
+选择平台，输入账号密码即可自动认证。支持：
+- DeepSeek
+- GLM（智谱）
+
+#### 方式三：导入凭证
+
+```bash
+python main.py import
+```
+
+从其他机器导出凭证文件，在服务器上导入使用。
+
+```bash
+# 在有界面机器上导出
+python main.py export
+
+# 复制 credentials.json 到服务器
+# 在服务器上导入
+python main.py import
+```
 
 **实际运行示例：**
 
@@ -301,8 +330,17 @@ python-zero-token/
 # 启动 API 服务器
 python main.py serve
 
-# 登录认证（自动打开所有平台，批量捕获凭证）
+# 浏览器认证（自动打开所有平台，批量捕获凭证）
 python main.py auth
+
+# 账号密码认证（Linux 服务器推荐）
+python main.py account
+
+# 从文件导入凭证
+python main.py import
+
+# 导出凭证到文件
+python main.py export
 
 # 查看已认证的平台列表
 python main.py list
@@ -320,6 +358,7 @@ python main.py help
 CHROME_USER_DATA_DIR=C:\tmp\chrome-debug    # 浏览器数据目录（持久化登录）
 CHROME_CDP_PORT=9222                         # Chrome 调试端口
 AUTO_START_CHROME=true                       # 自动启动 Chrome
+CHROME_HEADLESS=false                        # 无头模式（Linux 服务器推荐）
 
 # 服务器配置
 HOST=0.0.0.0                                # 监听地址
@@ -328,6 +367,28 @@ PORT=8000                                    # 监听端口
 # 凭证存储
 AUTH_FILE=.auth.json                         # 凭证文件路径
 ```
+
+### 无头模式（Headless）
+
+适用于 Linux 服务器等无界面环境：
+
+```env
+CHROME_HEADLESS=true
+```
+
+启用后 Chrome 将在后台运行，不显示图形界面。
+
+> ⚠️ **注意**：无头模式下仍需要手动登录，详见 [Linux 认证指南](docs/LINUX_AUTH.md)
+
+### Linux 服务器认证
+
+对于无界面环境，推荐以下方案：
+
+1. **导入凭证**（推荐）：在有界面机器完成认证，将 `.auth.json` 复制到服务器
+2. **无头模式 + Xvfb**：使用虚拟显示环境
+3. **远程调试**：连接到其他机器的浏览器实例
+
+详细说明请参考 [Linux 认证指南](docs/LINUX_AUTH.md)
 
 ## ⚠️ 注意事项
 

@@ -43,22 +43,19 @@ class BrowserLauncher:
         try:
             if system == "Windows":
                 result = subprocess.run(
-                    ["where", "chrome"],
-                    capture_output=True,
-                    text=True,
-                    timeout=2
+                    ["where", "chrome"], capture_output=True, text=True, timeout=2
                 )
                 if result.returncode == 0:
-                    return result.stdout.split('\n')[0].strip()
+                    return result.stdout.split("\n")[0].strip()
             else:
                 result = subprocess.run(
                     ["which", "google-chrome", "chromium", "chromium-browser"],
                     capture_output=True,
                     text=True,
-                    timeout=2
+                    timeout=2,
                 )
                 if result.returncode == 0:
-                    return result.stdout.split('\n')[0].strip()
+                    return result.stdout.split("\n")[0].strip()
         except Exception:
             pass
 
@@ -69,7 +66,7 @@ class BrowserLauncher:
         cls,
         cdp_port: int = 9222,
         user_data_dir: str = "chrome-debug-profile",
-        headless: bool = False
+        headless: bool = False,
     ) -> Optional[subprocess.Popen]:
         """
         启动 Chrome 浏览器（带远程调试）
@@ -87,8 +84,12 @@ class BrowserLauncher:
         if not chrome_path:
             print("❌ 未找到 Chrome 浏览器")
             print("\n请安装 Chrome 或手动指定路径:")
-            print("  Windows: C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")
-            print("  macOS: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+            print(
+                "  Windows: C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            )
+            print(
+                "  macOS: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            )
             print("  Linux: /usr/bin/google-chrome")
             return None
 
@@ -98,10 +99,15 @@ class BrowserLauncher:
             chrome_path,
             f"--remote-debugging-port={cdp_port}",
             f"--user-data-dir={user_data_dir}",
+            "--disable-dev-shm-usage",
+            "--no-first-run",
+            "--no-default-browser-check",
         ]
 
         if headless:
             args.append("--headless=new")
+            args.append("--disable-gpu")
+            args.append("--no-sandbox")
 
         os.makedirs(user_data_dir, exist_ok=True)
 
@@ -110,59 +116,8 @@ class BrowserLauncher:
             print(f"   路径: {chrome_path}")
             print(f"   CDP 端口: {cdp_port}")
             print(f"   用户数据目录: {user_data_dir}")
-
-            process = subprocess.Popen(
-                args,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0
-            )
-
-            import time
-            import httpx
-
-            max_wait = 10
-            for i in range(max_wait):
-                try:
-                    response = httpx.get(
-                        f"http://127.0.0.1:{cdp_port}/json/version",
-                        timeout=1
-                    )
-                    if response.status_code == 200:
-                        print(f"✓ Chrome 已启动 (CDP: {cdp_port})")
-                        return process
-                except Exception:
-                    time.sleep(1)
-
-            print(f"❌ Chrome 启动超时")
-            process.terminate()
-            return None
-
-        except Exception as e:
-            print(f"❌ 启动 Chrome 失败: {e}")
-            return None
-
-        # 确保 user_data_dir 是绝对路径
-        user_data_dir = os.path.abspath(user_data_dir)
-
-        # Chrome 启动参数
-        args = [
-            chrome_path,
-            f"--remote-debugging-port={cdp_port}",
-            f"--user-data-dir={user_data_dir}",
-        ]
-
-        if headless:
-            args.append("--headless=new")
-
-        # 首次启动时创建目录
-        os.makedirs(user_data_dir, exist_ok=True)
-
-        try:
-            print(f"🚀 正在启动 Chrome...")
-            print(f"   路径: {chrome_path}")
-            print(f"   CDP 端口: {cdp_port}")
-            print(f"   用户数据目录: {user_data_dir}")
+            if headless:
+                print(f"   模式: 无头模式 (Headless)")
 
             process = subprocess.Popen(
                 args,
@@ -173,11 +128,10 @@ class BrowserLauncher:
                 else 0,
             )
 
-            # 等待 Chrome 启动
             import time
             import httpx
 
-            max_wait = 10
+            max_wait = 15 if headless else 10
             for i in range(max_wait):
                 try:
                     response = httpx.get(
@@ -213,6 +167,7 @@ def ensure_chrome_running(
     cdp_port: int = 9222,
     user_data_dir: str = "chrome-debug-profile",
     auto_start: bool = True,
+    headless: bool = False,
 ) -> bool:
     """
     确保 Chrome 正在运行（带 CDP）
@@ -221,6 +176,7 @@ def ensure_chrome_running(
         cdp_port: CDP 端口号
         user_data_dir: 用户数据目录
         auto_start: 如果 Chrome 未运行，是否自动启动
+        headless: 是否使用无头模式
 
     Returns:
         Chrome 是否正在运行
@@ -230,7 +186,7 @@ def ensure_chrome_running(
         return True
 
     if auto_start:
-        process = BrowserLauncher.start_chrome(cdp_port, user_data_dir)
+        process = BrowserLauncher.start_chrome(cdp_port, user_data_dir, headless)
         return process is not None
 
     return False

@@ -1,4 +1,4 @@
-﻿from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings
 from pydantic import Field
 from typing import Optional
 from pathlib import Path
@@ -13,12 +13,15 @@ class Settings(BaseSettings):
     default_provider: str = Field(default="deepseek", description="Default provider")
 
     chrome_user_data_dir: str = Field(
-        default="C:\\tmp\\chrome-debug-1",
+        default="~/chrome-debug-1",
         description="Chrome user data directory for persistent login",
     )
     chrome_cdp_port: int = Field(default=9222, description="Chrome CDP port")
     auto_start_chrome: bool = Field(
         default=True, description="Auto start Chrome if not running"
+    )
+    chrome_headless: bool = Field(
+        default=False, description="Run Chrome in headless mode (no GUI)"
     )
 
     class Config:

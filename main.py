@@ -10,6 +10,11 @@ from providers.kimi_auth import KimiAuth
 from providers.doubao_auth import DoubaoAuth
 from utils.storage import auth_storage
 from utils.browser_launcher import ensure_chrome_running
+from utils.account_auth import (
+    AccountAuth,
+    import_credentials_from_file,
+    export_credentials_to_file,
+)
 from playwright.async_api import async_playwright
 
 
@@ -39,6 +44,7 @@ def cmd_auth():
         cdp_port=settings.chrome_cdp_port,
         user_data_dir=settings.chrome_user_data_dir,
         auto_start=settings.auto_start_chrome,
+        headless=settings.chrome_headless,
     )
 
     if not chrome_running:
@@ -243,10 +249,63 @@ def cmd_list():
 def print_usage():
     print_banner()
     print("Usage:\n")
-    print("  python main.py serve    Start API server")
-    print("  python main.py auth     Authenticate provider")
-    print("  python main.py list     List authenticated providers")
-    print("  python main.py help     Show this help\n")
+    print("  python main.py serve        Start API server")
+    print("  python main.py auth         Authenticate provider (browser)")
+    print("  python main.py account      Authenticate with account/password")
+    print("  python main.py import       Import credentials from file")
+    print("  python main.py export       Export credentials to file")
+    print("  python main.py list         List authenticated providers")
+    print("  python main.py help         Show this help\n")
+
+
+def cmd_account():
+    print_banner()
+    print("Account Authentication\n")
+
+    print("Select provider:")
+    print("  1. DeepSeek")
+    print("  2. GLM (智谱)")
+    print()
+
+    choice = input("Enter option (1-2): ").strip()
+
+    account = input("Account (phone/email): ").strip()
+    password = input("Password: ").strip()
+
+    print(f"\n正在认证...")
+
+    if choice == "1":
+        credentials = asyncio.run(AccountAuth.auth_deepseek(account, password))
+        if credentials:
+            auth_storage.save_credentials("deepseek", credentials)
+            print(f"\n✅ DeepSeek 认证成功！")
+    elif choice == "2":
+        credentials = asyncio.run(AccountAuth.auth_glm(account, password))
+        if credentials:
+            auth_storage.save_credentials("glm", credentials)
+            print(f"\n✅ GLM 认证成功！")
+    else:
+        print("\n❌ Invalid option\n")
+
+
+def cmd_import():
+    print_banner()
+    print("Import Credentials\n")
+
+    file_path = input("Enter credentials file path: ").strip()
+    if file_path:
+        import_credentials_from_file(file_path)
+
+
+def cmd_export():
+    print_banner()
+    print("Export Credentials\n")
+
+    file_path = input("Enter output file path (default: credentials.json): ").strip()
+    if not file_path:
+        file_path = "credentials.json"
+
+    export_credentials_to_file(file_path)
 
 
 def main():
@@ -260,6 +319,12 @@ def main():
         cmd_serve()
     elif command == "auth":
         cmd_auth()
+    elif command == "account":
+        cmd_account()
+    elif command == "import":
+        cmd_import()
+    elif command == "export":
+        cmd_export()
     elif command == "list":
         cmd_list()
     elif command in ["help", "--help", "-h"]:
