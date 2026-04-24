@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     default_provider: str = Field(default="deepseek", description="Default provider")
 
     chrome_user_data_dir: str = Field(
-        default="~/chrome-debug-1",
+        default="C:\\tmp\\chrome-debug-1",
         description="Chrome user data directory for persistent login",
     )
     chrome_cdp_port: int = Field(default=9222, description="Chrome CDP port")

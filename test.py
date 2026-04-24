@@ -10,17 +10,16 @@ def test_deepseek():
     print("=" * 60)
     print("Testing DeepSeek")
     print("=" * 60)
-    
+
     response = client.chat.completions.create(
         model="deepseek/deepseek-chat",
         messages=[{"role": "user", "content": "你好！请介绍一下你自己。"}],
         stream=True
     )
-    
+
     print("Response: ", end="", flush=True)
     for chunk in response:
-        if chunk.choices[0].delta.content:
-            print(chunk.choices[0].delta.content, end="", flush=True)
+        print(chunk)
     print("\n✓ Done\n")
 
 def test_glm():
@@ -29,7 +28,7 @@ def test_glm():
     print("=" * 60)
     
     response = client.chat.completions.create(
-        model="glm/glm-4-plus",
+        model="glm/glm-4-think",
         messages=[{"role": "user", "content": "你好！"}],
         stream=True
     )
@@ -79,25 +78,12 @@ if __name__ == "__main__":
     print("Python Zero Token Test")
     print("=" * 60 + "\n")
     
-    try:
-        test_deepseek()
-    except Exception as e:
-        print(f"✗ DeepSeek failed: {e}\n")
-    
+
     try:
         test_glm()
     except Exception as e:
         print(f"✗ GLM failed: {e}\n")
-    
-    try:
-        test_kimi()
-    except Exception as e:
-        print(f"✗ Kimi failed: {e}\n")
-    
-    try:
-        test_doubao()
-    except Exception as e:
-        print(f"✗ Doubao failed: {e}\n")
+
     
     print("=" * 60)
     print("Test Complete")

@@ -310,7 +310,8 @@ def cmd_export():
 
 def main():
     if len(sys.argv) < 2:
-        print_usage()
+        cmd_auth()
+        cmd_serve()
         return
 
     command = sys.argv[1].lower()
